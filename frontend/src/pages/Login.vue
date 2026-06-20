@@ -1,5 +1,21 @@
 <script setup>
 import GuestLayout from "../components/GuestLayout.vue";
+import { ref } from "vue";
+import axiosClient from "../axios.js";
+import router from "../router.js";
+
+const data = ref({
+  email: "",
+  password: "",
+});
+
+function submit() {
+  axiosClient.get("/sanctum/csrf-cookie").then(() => {
+    axiosClient.post("/login", data.value).then(() => {
+      router.push({name: 'Home'});
+    });
+  });
+}
 </script>
 
 <template>
@@ -11,7 +27,7 @@ import GuestLayout from "../components/GuestLayout.vue";
     </h2>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" action="#" method="POST">
+      <form class="space-y-6" @submit.prevent="submit()">
         <div>
           <label for="email" class="block text-sm/6 font-medium text-gray-900"
             >Email address</label
@@ -20,6 +36,7 @@ import GuestLayout from "../components/GuestLayout.vue";
             <input
               type="email"
               name="email"
+              v-model="data.email"
               id="email"
               autocomplete="email"
               required=""
@@ -47,6 +64,7 @@ import GuestLayout from "../components/GuestLayout.vue";
             <input
               type="password"
               name="password"
+              v-model="data.password"
               id="password"
               autocomplete="current-password"
               required=""
@@ -67,7 +85,6 @@ import GuestLayout from "../components/GuestLayout.vue";
 
       <p class="mt-10 text-center text-sm/6 text-gray-500">
         Don't have an account?
-        {{ " " }}
         <RouterLink :to="{ name: 'Register' }" class="font-semibold text-indigo-600 hover:text-indigo-500"
           >Sign up</RouterLink
         >
