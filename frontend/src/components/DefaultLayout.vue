@@ -42,9 +42,9 @@
                   <span class="sr-only">Open user menu</span>
                   <img
                     class="size-8 rounded-full outline -outline-offset-1 outline-white/10"
-                    :src="user.imageUrl"
-                    alt=""
+                    src="https://randomuser.me/api/portraits/men/32.jpg"
                   />
+                  <span class="text-white ml-3">{{ user.name }}</span>
                 </MenuButton>
 
                 <transition
@@ -106,9 +106,10 @@
             <div class="shrink-0">
               <img
                 class="size-10 rounded-full outline -outline-offset-1 outline-white/10"
-                :src="user.imageUrl"
                 alt=""
+                src="https://randomuser.me/api/portraits/men/32.jpg"
               />
+              <!-- :src="user.imageUrl" -->
             </div>
             <div class="ml-3">
               <div class="text-base/5 font-medium text-white">
@@ -150,19 +151,25 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 import axiosClient from "../axios.js";
 import router from "../router.js";
 
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
+import useUserStore from "../store/user.js";
+import { computed } from "vue";
+
+const userStore = useUserStore();
+const user = computed(() => userStore.user);
+
+// const user = {
+//   name: "Tom Cook",
+//   email: "tom@example.com",
+//   imageUrl:
+//     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+// };
 const navigation = [
   { name: "Uploads", to: { name: "Home" } },
   { name: "My Images", to: { name: "MyImages" } },
 ];
 
 function logout() {
-  axiosClient.post("/logout").then(() => {
+  axiosClient.post("/api/logout").then(() => {
     router.push({ name: "Login" });
   });
 }

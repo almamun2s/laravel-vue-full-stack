@@ -2,6 +2,7 @@
 import GuestLayout from "../components/GuestLayout.vue";
 import { ref } from "vue";
 import axiosClient from "../axios.js";
+import router from "../router.js";
 
 const data = ref({
   name: "",
@@ -10,9 +11,23 @@ const data = ref({
   password_confirmation: "",
 });
 
+const errors = ref({
+  name: [],
+  email: [],
+  password: [],
+});
+
 function submit() {
   axiosClient.get("/sanctum/csrf-cookie").then(() => {
-    axiosClient.post("/register", data.value);
+    axiosClient
+      .post("/api/register", data.value)
+      .then(() => {
+        router.push({ name: "Home" });
+      })
+      .catch((error) => {
+        console.log(error);
+        errors.value = error.response.data.errors;
+      });
   });
 }
 </script>
@@ -37,10 +52,12 @@ function submit() {
               name="name"
               v-model="data.name"
               id="name"
-              required
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
           </div>
+          <p class="text-red-500 text-sm mt-1" v-if="errors.name">
+            {{ errors.name[0] }}
+          </p>
         </div>
         <div>
           <label for="email" class="block text-sm/6 font-medium text-gray-900"
@@ -53,10 +70,12 @@ function submit() {
               v-model="data.email"
               id="email"
               autocomplete="email"
-              required=""
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
           </div>
+          <p class="text-red-500 text-sm mt-1" v-if="errors.email">
+            {{ errors.email[0] }}
+          </p>
         </div>
 
         <div>
@@ -73,10 +92,12 @@ function submit() {
               name="password"
               v-model="data.password"
               id="password"
-              required=""
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
           </div>
+          <p class="text-red-500 text-sm mt-1" v-if="errors.password">
+            {{ errors.password[0] }}
+          </p>
         </div>
 
         <div>
@@ -93,7 +114,6 @@ function submit() {
               name="password_confirmation"
               v-model="data.password_confirmation"
               id="password_confirmation"
-              required=""
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
           </div>

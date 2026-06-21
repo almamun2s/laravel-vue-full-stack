@@ -10,6 +10,8 @@ import MyImages from './pages/MyImages.vue'
 import Login from './pages/Login.vue'
 import Register from './pages/Register.vue'
 
+import useUserStore from './store/user'
+
 const routes = [
     {
         path: '/',
@@ -17,7 +19,18 @@ const routes = [
         children: [
             { path: '/', name: 'Home', component: Home },
             { path: '/images', name: 'MyImages', component: MyImages },
-        ]
+        ],
+        beforeEnter: async (to, from, next) => {
+            try {
+                const userStore = useUserStore();
+                await userStore.fetchUsers();
+                next();
+
+            } catch (error) {
+                // console.error('Failed to fetch data:', error)
+                next(false) // Prevent navigation on error
+            }
+        }
     },
     {
         path: '/login',

@@ -9,11 +9,19 @@ const data = ref({
   password: "",
 });
 
+let errorMessage = ref("");
+
 function submit() {
   axiosClient.get("/sanctum/csrf-cookie").then(() => {
-    axiosClient.post("/login", data.value).then(() => {
-      router.push({name: 'Home'});
-    });
+    axiosClient
+      .post("/api/login", data.value)
+      .then(() => {
+        router.push({ name: "Home" });
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+        errorMessage.value = error.response.data.message;
+      });
   });
 }
 </script>
@@ -25,6 +33,10 @@ function submit() {
     >
       Log in to your account
     </h2>
+
+    <p v-if="errorMessage" class="text-center text-sm/6 text-red-500">
+      {{ errorMessage }}
+    </p>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form class="space-y-6" @submit.prevent="submit()">
@@ -39,7 +51,6 @@ function submit() {
               v-model="data.email"
               id="email"
               autocomplete="email"
-              required=""
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
           </div>
@@ -67,7 +78,6 @@ function submit() {
               v-model="data.password"
               id="password"
               autocomplete="current-password"
-              required=""
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
           </div>
@@ -85,7 +95,9 @@ function submit() {
 
       <p class="mt-10 text-center text-sm/6 text-gray-500">
         Don't have an account?
-        <RouterLink :to="{ name: 'Register' }" class="font-semibold text-indigo-600 hover:text-indigo-500"
+        <RouterLink
+          :to="{ name: 'Register' }"
+          class="font-semibold text-indigo-600 hover:text-indigo-500"
           >Sign up</RouterLink
         >
       </p>
