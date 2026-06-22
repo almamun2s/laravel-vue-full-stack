@@ -13,7 +13,8 @@ class ImageController extends Controller
      */
     public function index()
     {
-        return Image::all()
+        return Image::latest()
+            ->get()
             ->map(function ($image) {
                 return [
                     'id' => $image->id,
@@ -30,7 +31,7 @@ class ImageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => ['required', 'image', 'file', 'mime:jpeg,png,jpg,gif,svg'],
+            'image' => ['required', 'image', 'file', 'mimes:jpeg,png,jpg,gif,svg'],
             'label' => ['nullable', 'string'],
         ]);
 
